@@ -31,16 +31,20 @@ export class App extends Component {
     );
 
     if (newContactName) {
+      this.setState({
+        name: '',
+        number: '',
+      });
       return alert(`${newContact.name} is already in contacts.`);
     } else {
       updatedContacts = [...this.state.contacts, newContact];
+      this.setState({
+        contacts: updatedContacts,
+        name: '',
+        number: '',
+        filter: '',
+      });
     }
-    this.setState({
-      contacts: updatedContacts,
-      name: '',
-      number: '',
-      filter: '',
-    });
   };
 
   handleFindName = evt => {
@@ -49,7 +53,12 @@ export class App extends Component {
       contact.name.toLowerCase().includes(value.toLowerCase())
     );
     this.setState({ filter: value, filteredContacts });
-    // console.log(this.state);
+  };
+
+  handleDelete = id => {
+    this.setState(prev => ({
+      contacts: prev.contacts.filter(contact => contact.id !== id),
+    }));
   };
 
   render() {
@@ -103,7 +112,12 @@ export class App extends Component {
             {contacts.map(contact => (
               <li key={contact.id}>
                 {contact.name}: {contact.number}
-                <button type="button">Delete</button>
+                <button
+                  type="button"
+                  onClick={() => this.handleDelete(contact.id)}
+                >
+                  Delete
+                </button>
               </li>
             ))}
           </ul>
