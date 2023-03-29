@@ -1,9 +1,10 @@
 import { nanoid } from 'nanoid';
 
 import { Component } from 'react';
+import { Wrapper } from './App.styled';
 import { ContactForm } from './ContactForm/ContactForm';
 import { ContactList } from './ContactList/ContactList';
-import { Filter } from './Filter';
+import { Filter } from './Filter/Filter';
 
 export class App extends Component {
   state = {
@@ -68,18 +69,16 @@ export class App extends Component {
       ? this.state.filteredContacts
       : this.state.contacts;
     return (
-      <div>
+      <Wrapper>
         <h1>Phonebook</h1>
         <ContactForm onClickSubmit={this.handleSubmit} />
-        <div>
-          <h2>Contacts</h2>
-          <Filter
-            onFindName={this.handleFindName}
-            valueFilter={this.state.filter}
-          />
-          <ContactList contacts={contacts} onClickDelete={this.handleDelete} />
-        </div>
-      </div>
+        <h2>Contacts</h2>
+        <Filter
+          onFindName={this.handleFindName}
+          valueFilter={this.state.filter}
+        />
+        <ContactList contacts={contacts} onClickDelete={this.handleDelete} />
+      </Wrapper>
     );
   }
 }
