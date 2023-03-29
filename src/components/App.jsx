@@ -1,29 +1,26 @@
 import { nanoid } from 'nanoid';
 
 import { Component } from 'react';
+import { ContactForm } from './ContactForm/ContactForm';
+import { ContactList } from './ContactList/ContactList';
+import { Filter } from './Filter';
 
 export class App extends Component {
   state = {
     contacts: [],
-    name: '',
-    number: '',
     filter: '',
   };
 
-  handleChange = evt => {
-    const { name, value } = evt.target;
-    this.setState({ [name]: value });
-  };
+  //  Додаємо обробник на форму при сабміті
 
-  handleSubmit = evt => {
-    evt.preventDefault();
-
+  handleSubmit = ({ name, number }) => {
     const newContact = {
-      filter: this.state.name,
-      number: this.state.number,
-      name: this.state.name,
+      number: number,
+      name: name,
       id: nanoid(),
     };
+
+    // Шукаємо чи є у масиві контаків ім'я, яке вводить користувач
 
     let updatedContacts;
     const newContactName = this.state.contacts.find(
@@ -31,10 +28,10 @@ export class App extends Component {
     );
 
     if (newContactName) {
-      this.setState({
-        name: '',
-        number: '',
-      });
+      // this.setState({
+      //   name: '',
+      //   number: '',
+      // });
       return alert(`${newContact.name} is already in contacts.`);
     } else {
       updatedContacts = [...this.state.contacts, newContact];
@@ -47,6 +44,9 @@ export class App extends Component {
     }
   };
 
+  // Пошук користувача за ім'ям у збереженому масиві
+  //    і якщо є такий користувач, то формуємо новий масив
+
   handleFindName = evt => {
     const { value } = evt.target;
     const filteredContacts = this.state.contacts.filter(contact =>
@@ -54,6 +54,8 @@ export class App extends Component {
     );
     this.setState({ filter: value, filteredContacts });
   };
+
+  // Видалення контакту за id
 
   handleDelete = id => {
     this.setState(prev => ({
@@ -68,59 +70,14 @@ export class App extends Component {
     return (
       <div>
         <h1>Phonebook</h1>
-        <form onSubmit={this.handleSubmit}>
-          <label>
-            Name
-            <input
-              type="text"
-              name="name"
-              placeholder="Enter name"
-              pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-              title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-              required
-              onChange={this.handleChange}
-              value={this.state.name}
-            />
-          </label>
-          <label>
-            Number
-            <input
-              type="tel"
-              name="number"
-              placeholder="Enter number"
-              pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-              title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-              required
-              onChange={this.handleChange}
-              value={this.state.number}
-            />
-          </label>
-          <button type="submit">Add contact</button>
-        </form>
+        <ContactForm onClickSubmit={this.handleSubmit} />
         <div>
           <h2>Contacts</h2>
-          <p>Find Contacts by name</p>
-          <label>
-            <input
-              type="text"
-              name="filter"
-              onChange={this.handleFindName}
-              value={this.state.filter}
-            />
-          </label>
-          <ul>
-            {contacts.map(contact => (
-              <li key={contact.id}>
-                {contact.name}: {contact.number}
-                <button
-                  type="button"
-                  onClick={() => this.handleDelete(contact.id)}
-                >
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
+          <Filter
+            onFindName={this.handleFindName}
+            valueFilter={this.state.filter}
+          />
+          <ContactList contacts={contacts} onClickDelete={this.handleDelete} />
         </div>
       </div>
     );
